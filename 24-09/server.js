@@ -1,10 +1,10 @@
-// É um framework que cria um servidor e usará as funções HTTPs.
+// Importa dependências
 const express = require("express");
-// CORS é um pacote que providencia uma conexão express entre mais de 1 aplicação ou várias.
 const cors = require("cors");
+ 
 const app = express();
-const port = 3000;
-
+const PORT = 3000;
+ 
 // Middleware
 app.use(cors()); // habilita CORS para acessar a API de outra porta (ex.: Live Server 5500)
 app.use(express.json());
@@ -19,7 +19,7 @@ app.get("/api/products/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const product = products.find(p => p.id === id);
   if (!product) return res.status(404).json({ error: "Produto não encontrado" });
-  res.json(products);
+  res.json(product);
 });
  
 // Listar todos os produtos
@@ -58,6 +58,6 @@ app.delete("/api/products/:id", (req, res) => {
 });
  
 // Sobe o servidor
-app.listen(port, () => {
-  console.log(`Backend rodando em http://localhost:${port}`);
+app.listen(PORT, () => {
+  console.log(`Backend rodando em http://localhost:${PORT}`);
 });
