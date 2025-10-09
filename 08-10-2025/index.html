@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>POO</title>
+</head>
+<body>
+  <h1>CRUD de Setores</h1>
+
+  <h3>Adicionar Setor</h3>
+  <input id="nome" placeholder="Nome do setor">
+  <input id="descricao" placeholder="Descrição">
+  <button onclick="adicionar()">Adicionar</button>
+  <button onclick="carregar()">Atualizar Lista</button>
+
+  <h3>Lista de Setores</h3>
+  <ul id="lista"></ul>
+
+  <script>
+    const API = "http://localhost:3000/api/setores";
+
+    // Carrega todos os setores (GET)
+    async function carregar() {
+      const resposta = await fetch(API);
+      const setores = await resposta.json();
+      const lista = document.getElementById("lista");
+      lista.innerHTML = "";
+
+      setores.forEach(setor => {
+        const li = document.createElement("li");
+        li.textContent = `${setor.id} - ${setor.nome} (${setor.descricao}) `;
+
+        // Botão Excluir
+        const btnExcluir = document.createElement("button");
+        btnExcluir.textContent = "Excluir";
+        btnExcluir.onclick = () => excluir(setor.id);
+
+        // Botão Editar
+        const btnEditar = document.createElement("button");
+        btnEditar.textContent = "Editar";
+        btnEditar.onclick = () => editar(setor);
+
+        li.appendChild(btnEditar);
+        li.appendChild(btnExcluir);
+        lista.appendChild(li);
+      });
+    }
+
+    // Adiciona um novo setor (POST)
+    async function adicionar() {
+      const nome = document.getElementById("nome").value;
+      const descricao = document.getElementById("descricao").value;
+      await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nome, descricao })
+      });
+      carregar();
+    }
+
+    // Edita um setor (PUT)
+    async function editar(setor) {
+      const novoNome = prompt("Novo nome:", setor.nome);
+      const novaDesc = prompt("Nova descrição:", setor.descricao);
+      if (!novoNome || !novaDesc) return;
+
+      await fetch(`${API}/${setor.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nome: novoNome, descricao: novaDesc })
+      });
+      carregar();
+    }
+    
+    // Exclui um setor (DELETE)
+    async function excluir(id) {
+      if (!confirm("Deseja excluir este setor?")) return;
+      await fetch(`${API}/${id}`, { method: "DELETE" });
+      carregar();
+    }
+
+    carregar();
+  </script>
+</body>
+</html>
